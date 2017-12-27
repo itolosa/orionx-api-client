@@ -48,4 +48,4 @@ Where to find fingerprint, user-agent and login-token?
 ======================================================
 Login into orionx.io, then on your browser (valid for Chrome or Firefox) open Developers Tools or similar. Then go to `Network` tab and click over a graphql request with 200 status. Under **Request Headers** you may find `fingerprint`, `user-agent` and `login-token` values.
 
-![Headers Example](https://github.com/itolosa/orionx-api-client/blob/meta/meta/login-token-example.png)
+![Headers Example](https://github.com/itolosa/orionx-api-client/raw/meta/meta/login-token-example.png)
