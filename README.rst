@@ -26,7 +26,7 @@ Example
 
     from orionxapi.client import OrionxApiClient
 
-    # rpc_user and rpc_password are set in the bitcoin.conf file
+    # handler initialization with custom headers
     orionx_client = OrionxApiClient(additional_headers={
                                     'login-token': '<your-login-token-here>',
                                     'fingerprint': '<fingerprint-here>'})
@@ -44,7 +44,11 @@ Example
 
 For more information of methods available see `orionxapi/orionx_queries.py`
 
-Where to find fingerprint and login-token?
-==========================================
-Login into orionx.io, then on your browser (valid for Chrome or Firefox) open Developers Tools or similar. Then go to `Network` tab and click over a graphql request with 200 status. Under **Request Headers** you may find `fingerprint` and `login-token` values. Keep those values on a safe place.
+Where do I find headers?
+========================
+Login into orionx.io, then on your favorite browser (valid for Chrome and Firefox) open Developers Tools or similar. Then go into `Network` tab and click over a graphql request with 200 status. Under **Request Headers** you may find each one of the values. Keep those values secure. You can override any header by passing a value to `additional_headers` initializer parameter.
 [[https://github.com/itolosa/orionx-api-client/blob/meta/login-token-example.png|alt=login-token-example]]
+
+NOTE
+====
+With the latest platform update, now you need to specify all the browser requests headers into this API. ;(

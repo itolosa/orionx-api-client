@@ -1,3 +1,6 @@
+def _convert_amount(amount):
+    return int(100000000 * amount)
+
 def getOrderBook(marketCode="CHACLP"):
     return {
         "query": "query getOrderBook($marketCode: ID!) {\n  orderBook: marketOrderBook(marketCode: $marketCode, limit: 50) {\n    buy {\n      limitPrice\n      amount\n      __typename\n    }\n    sell {\n      limitPrice\n      amount\n      __typename\n    }\n    spread\n    __typename\n  }\n}\n",
@@ -67,8 +70,8 @@ def placeLimitOrder(marketCode="CHACLP", amount=20000000, limitPrice=7000, sell=
         "query": "mutation placeLimitOrder($marketCode: ID, $amount: BigInt, $limitPrice: BigInt, $sell: Boolean) {\n  placeLimitOrder(marketCode: $marketCode, amount: $amount, limitPrice: $limitPrice, sell: $sell) {\n    _id\n    __typename\n  }\n}\n",
         "variables": {
             "marketCode": marketCode,
-            "amount": amount,
-            "limitPrice": limitPrice,
+            "amount": _convert_amount(amount),
+            "limitPrice": _convert_amount(limitPrice),
             "sell": sell
         },
         "operationName": "placeLimitOrder"
@@ -89,7 +92,7 @@ def placeMarketOrder(marketCode="CHACLP", amount=1000, sell=False):
         "query": "mutation placeMarketOrder($marketCode: ID, $amount: BigInt, $sell: Boolean) {\n  placeMarketOrder(marketCode: $marketCode, amount: $amount, sell: $sell) {\n    _id\n    __typename\n  }\n}\n",
         "variables": {
             "marketCode": marketCode,
-            "amount": amount,
+            "amount": _convert_amount(amount),
             "sell": sell
         },
         "operationName": "placeMarketOrder"
@@ -100,11 +103,11 @@ def placeStopLimitOrder(marketCode="CHACLP", amount=100000000000000, limitPrice=
         "query": "mutation placeStopLimitOrder($marketCode: ID, $stopPriceUp: BigInt, $stopPriceDown: BigInt, $amount: BigInt, $limitPrice: BigInt, $sell: Boolean) {\n  placeStopLimitOrder(marketCode: $marketCode, stopPriceUp: $stopPriceUp, stopPriceDown: $stopPriceDown, amount: $amount, limitPrice: $limitPrice, sell: $sell) {\n    _id\n    __typename\n  }\n}\n",
         "variables": {
             "marketCode": marketCode,
-            "amount": amount,
-            "limitPrice": limitPrice,
+            "amount": _convert_amount(amount),
+            "limitPrice": _convert_amount(limitPrice),
             "sell": sell,
-            "stopPriceUp": stopPriceUp,
-            "stopPriceDown": stopPriceDown
+            "stopPriceUp": _convert_amount(stopPriceUp),
+            "stopPriceDown": _convert_amount(stopPriceDown)
         },
         "operationName": "placeStopLimitOrder"
     }
@@ -137,7 +140,7 @@ def getEstimate(marketCode="CHACLP", amount=100000000, sell=False):
         "query": "query getEstimate($marketCode: ID!, $amount: Float!, $sell: Boolean!) {\n      estimate: marketEstimateAmountToRecieve(marketCode: $marketCode, amount: $amount, sell: $sell)\n    }\n  ",
         "variables": {
             "marketCode": marketCode,
-            "amount": amount,
+            "amount": _convert_amount(amount),
             "sell": sell
         },
         "operationName": "getEstimate"
@@ -258,8 +261,8 @@ def send(fromWalletId, toAddressCode, amount=100000000, fee=110):
         "variables": {
             "fromWalletId": fromWalletId,
             "toAddressCode": toAddressCode,
-            "amount": amount,
-            "fee": fee
+            "amount": _convert_amount(amount),
+            "fee": _convert_amount(fee)
         },
         "operationName": "send"
     }
