@@ -1,5 +1,5 @@
 import requests
-import queries as orionx_queries
+from orionxapi import queries as orionx_queries
 import ujson
 
 def async_query_wrapper(qfx):
