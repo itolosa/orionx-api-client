@@ -47,8 +47,13 @@ For more information of methods available see `orionxapi/orionx_queries.py`
 Where do I find headers?
 ========================
 Login into orionx.io, then on your favorite browser (valid for Chrome and Firefox) open Developers Tools or similar. Then go into `Network` tab and click over a graphql request with 200 status. Under **Request Headers** you may find each one of the values. Keep those values secure. You can override any header by passing a value to `additional_headers` initializer parameter.
-[[https://github.com/itolosa/orionx-api-client/blob/meta/login-token-example.png|alt=login-token-example]]
 
+.. image:: https://github.com/itolosa/orionx-api-client/blob/meta/login-token-example.png
+   :height: 100px
+   :width: 200 px
+   :scale: 50 %
+   :alt: alternate text
+   :align: right
 NOTE
 ====
 With the latest platform update, now you need to specify all the browser requests headers into this API. ;(
