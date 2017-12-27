@@ -43,3 +43,8 @@ Example
     print(results)
 
 For more information of methods available see `orionxapi/orionx_queries.py`
+
+Where to find fingerprint and login-token?
+==========================================
+Login into orionx.io, then on your browser (valid for Chrome or Firefox) open Developers Tools or similar. Then go to `Network` tab and click over a graphql request with 200 status. Under **Request Headers** you may find `fingerprint` and `login-token` values. Keep those values on a safe place.
+[[https://github.com/itolosa/orionx-api-client/blob/meta/login-token-example.png|alt=login-token-example]]
