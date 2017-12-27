@@ -48,7 +48,7 @@ Where do I find headers?
 ========================
 Login into orionx.io, then on your favorite browser (valid for Chrome and Firefox) open Developers Tools or similar. Then go into `Network` tab and click over a graphql request with 200 status. Under **Request Headers** you may find each one of the values. Keep those values secure. You can override any header by passing a value to `additional_headers` initializer parameter.
 
-.. image:: https://github.com/itolosa/orionx-api-client/blob/meta/login-token-example.png
+.. image:: https://github.com/itolosa/orionx-api-client/raw/meta/meta/login-token-example.png
    :height: 100px
    :width: 200 px
    :scale: 50 %
