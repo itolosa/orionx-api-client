@@ -10,7 +10,10 @@ library to manage operations on the Orionx exchange platform.'''
 install_requires = [
   'requests==2.18.4',
   'six==1.11.0',
-  'ujson==1.35'
+  'ujson==1.35',
+  'graphql-core==2.0',
+  'gql==0.1.0',
+  'fake-useragent==0.1.8'
 ]
 
 version = orionxapi.__version__
