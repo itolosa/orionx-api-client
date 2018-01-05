@@ -8,7 +8,7 @@ import hashlib
 import datetime
 from graphql.execution import ExecutionResult
 from graphql.language.printer import print_ast
-from .future.dsl import DSLSchema
+from .dsl import DSLSchema
 
 def valid_token(expirets):
   delta_t = (datetime.datetime.fromtimestamp(expirets/1000.0) - datetime.datetime.now())
@@ -171,7 +171,8 @@ def client():
 def cgql(document):
   return gql('{%s}' % document)
 
-client = client()
-ds = DSLSchema(client)
-query_dsl = ds.Query.marketStats.args(marketCode="CHACLP", aggregation="h1").select(ds.MarketStatsPoint.open)
-print(ds.execute(cgql(query_dsl)))
+if __name__ == '__main__':
+  client = client()
+  ds = DSLSchema(client)
+  query_dsl = ds.Query.marketStats.args(marketCode="CHACLP", aggregation="h1").select(ds.MarketStatsPoint.open)
+  print(ds.execute(cgql(query_dsl)))
