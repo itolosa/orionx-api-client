@@ -40,7 +40,7 @@ def sync_query_wrapper(qfx):
   return query_builder_wrapper
 
 class OrionxApiClient(object):
-  def __init__(self, additional_headers={}, registerable=True):
+  def __init__(self, additional_headers={}, cookies={}, registerable=True):
     self.session_headers = {
       'authority': 'api.orionx.io',
       'dnt': '1',
@@ -59,6 +59,8 @@ class OrionxApiClient(object):
     self.session = requests.Session()
     self.session_headers.update(additional_headers)
     self.session.headers.update(self.session_headers)
+    self.cookies = cookies
+    self.session.cookies = requests.utils.cookiejar_from_dict(self.cookies)
     self.registerable_queries = registerable
     self.reg_queries = []
     self.reg_keys = []

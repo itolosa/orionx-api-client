@@ -44,7 +44,45 @@ Example
     results = orionx_client.perform_queries()
     print(results)
 
-For more information of methods available see `orionxapi/orionx_queries.py`
+
+For more information about available methods see `orionxapi/queries.py`
+
+Connection Manager
+==================
+
+By using this utility you can login into orionx and start making requests with just your email, password and verification code.
+
+.. code:: python
+
+    from orionxapi.connection_manager import client, orionxapi_builder
+    from orionxapi.lib.dsl import DSLSchema
+
+    # handler initialization with custom headers
+    client = client(headers_filename='cache/headers.json',
+                    cookies_filename='cache/cookies.json')
+
+    ds = DSLSchema(client)
+    
+    query_dsl = ds.Query.marketStats.args(
+                    marketCode="CHACLP", 
+                    aggregation="h1"
+                  ).select(ds.MarketStatsPoint.open)
+
+    print(ds.query(query_dsl))
+
+    # or using old API
+    orionx_client = orionxapi_builder(headers_filename='cache/headers.json',
+                    cookies_filename='cache/cookies.json')
+    cha_stats = orionx_client.execute_query('getMarketStats')(marketCode="CHACLP")
+    print(cha_stats)
+
+* To execute mutations use: `ds.mutation(query_dsl)` 
+* To execute queries use: `ds.query(query_dsl)` 
+* You can use dictionaries on parameters to specify objects like `password` parameter on `loginWithPassword` query used on `orionxapi/connection_manager.py`
+
+* This DSL feature is achieved by using `gql` (https://github.com/graphql-python/gql)
+* See: https://github.com/graphql-python/gql/blob/master/tests/starwars/test_dsl.py
+
 
 Where do I find headers?
 ========================

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import orionxapi
 
@@ -29,7 +29,7 @@ setup(name='orionx-api-client',
   maintainer_email='ignacio@perejil.cl',
   license='MIT',
   keywords='orionx api client',
-  packages=['orionxapi'],
+  packages=find_packages(exclude=['tests']),
   zip_safe=False,
   install_requires=install_requires,
   package_data={},
