@@ -6,7 +6,9 @@ Orionx Api Client is a client library to manage operations on the Orionx exchang
 
 It can perform transactions and display market info by querying a graphql endpoint.
 
-**UPDATE. HOW TO CONNECT**: https://gist.github.com/itolosa/c790543f282d22f99dfc4c112e471c5a
+*Deprecated*: How to connect with headers: https://gist.github.com/itolosa/c790543f282d22f99dfc4c112e471c5a
+
+You should use *connection manager*
 
 Installation
 ============
