@@ -8,10 +8,14 @@ import datetime
 from .lib.dsl import DSLSchema
 from .lib.custom_transport import CustomTransport
 from .client import OrionxApiClient
+import sys
 
 def valid_token(expirets):
   delta_t = (datetime.datetime.fromtimestamp(expirets/1000.0) - datetime.datetime.now())
   return datetime.timedelta(days=1) < delta_t
+
+if (sys.version_info < (3, 0)):
+  FileNotFoundError = IOError
 
 def digest_sha256(password):
   m = hashlib.sha256()
@@ -28,7 +32,10 @@ def client(headers_filename, cookies_filename):
     headers_cachefp = open(headers_filename, 'r')
     headers_tuple = ujson.load(headers_cachefp)
     headers_cachefp.close()
-  except FileNotFoundError:
+    assert(isinstance(headers_tuple, list))
+    assert(isinstance(headers_tuple[0], dict))
+    assert(isinstance(headers_tuple[1], int))
+  except (FileNotFoundError, ValueError, AssertionError, IndexError):
     cache_exists = False
 
   if cache_exists and valid_token(headers_tuple[1]):
@@ -122,7 +129,10 @@ def orionxapi_builder(headers_filename, cookies_filename):
     headers_cachefp = open(headers_filename, 'r')
     headers_tuple = ujson.load(headers_cachefp)
     headers_cachefp.close()
-  except FileNotFoundError:
+    assert(isinstance(headers_tuple, list))
+    assert(isinstance(headers_tuple[0], dict))
+    assert(isinstance(headers_tuple[1], int))
+  except (FileNotFoundError, ValueError, AssertionError, IndexError):
     cache_exists = False
 
   if cache_exists and valid_token(headers_tuple[1]):
