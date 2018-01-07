@@ -151,15 +151,18 @@ def field(field, **args):
     raise Exception('Received incompatible query field: "{}".'.format(field))
 
 
-def query(*fields, operation='query'):
+def query(*fields, **kwargs):
+    if not 'operation' in kwargs:
+        kwargs['operation'] = 'query'
     return ast.Document(
         definitions=[ast.OperationDefinition(
-            operation=operation,
+            operation=kwargs['operation'],
             selection_set=ast.SelectionSet(
                 selections=list(selections(*fields))
             )
         )]
     )
+
 
 
 def serialize_list(serializer, values):
