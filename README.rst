@@ -15,9 +15,10 @@ Installation
 
 To install, use `pip`:
 
-```bash
-$ pip install --upgrade orionx-api-client
-```
+.. code:: bash
+
+    $ pip install --upgrade orionx-api-client
+
 
 Python Version
 ==============
