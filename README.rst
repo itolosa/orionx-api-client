@@ -2,62 +2,43 @@
 orionx-api-client
 =================
 
-Orionx Api Client is a client library to manage operations on the Orionx exchange platform.
 
-It can perform transactions and display market info by querying a graphql endpoint.
+Orionx Api Client es un cliente que permite manejar operaciones en la plataforma de exchange orionx.io
 
-*Deprecated*: How to connect with headers: https://gist.github.com/itolosa/c790543f282d22f99dfc4c112e471c5a
+Permite realizar transacciones y mostrar informacion del mercado consultando un endpoint con graphql
 
-You should use *connection manager*
+*Deprecado*: Como conectar usando headers: https://gist.github.com/itolosa/c790543f282d22f99dfc4c112e471c5a
+
+Se recomienda usar *connection manager*
 
 |pypi|
 
-Installation
+Instalación
 ============
 
-To install, use ``pip``:
+Para instalar, usar ``pip``:
 
 .. code:: bash
 
     $ pip install --upgrade orionx-api-client
 
 
-Python Version
-==============
+Versiones
+=========
 
-Python 2.7, 3.4, 3.5, and 3.6 are supported.
+La librería soporta Python 2.7, 3.4, 3.5, y 3.6.
 
-Example
+
+Ejemplo
 =======
-.. code:: python
 
-    from orionxapi.client import OrionxApiClient
+El siguiente ejemplo usa ``connection_manager``. Esta utilidad permite conectarse con orionx.io y comenzar a realizar peticiones solo ingresando el email, password y codigo de verificación a traves de la linea de comandos al momento de ejecutar la función ``client`` o ``orionxapi_builder``, los cuales retornan instancias de ``gql.Client`` y ``OrionxApiClient`` respectivamente, con sus parametros de conexión ya inicializados.
 
-    # handler initialization with custom headers
-    orionx_client = OrionxApiClient(additional_headers={
-                                    'login-token': '<your-login-token-here>',
-                                    'fingerprint': '<fingerprint-here>'})
-    my_info = orionx_client.execute_query('getMe')()
-    cha_stats = orionx_client.execute_query('getMarketStats')(marketCode="CHACLP")
-    print(my_info, cha_stats)
-
-    # bulk query support : send many queries in one single request:
-    # (register each query beforehand)
-    orionx_client.register_query('getMarketStats')(marketCode="CHACLP")
-    orionx_client.register_query('myOrders')(marketCode="CHACLP")
-    orionx_client.register_query('getMarketMid')(marketCode="CHACLP")
-    results = orionx_client.perform_queries()
-    print(results)
-
-
-For more information about available methods see ``orionxapi/queries.py``
-
-Connection Manager
-==================
-
-By using this utility you can login into orionx and start making requests with just your email, password and verification code.
+Los parámetros ``headers_filename`` y ``cookies_filename`` corresponden a las rutas de los archivos caché utilizados para guardar los parametros de conexión del cliente mientras estos no hayan expirado. Al especificar las rutas, deben existir los directorios previos, pero no es necesario la existencia de los archivos, es decir, en el ejemplo debe existir el directorio ``cache`` y los archivos headers.json y cookies.json se crearán automáticamente con la información necesaria una vez realizada la primera conexión.
 
 .. code:: python
+
+    # This file is located at: examples/using_manager.py
 
     from orionxapi.connection_manager import client, orionxapi_builder
     from orionxapi.lib.dsl import DSLSchema
@@ -81,21 +62,48 @@ By using this utility you can login into orionx and start making requests with j
     cha_stats = orionx_client.execute_query('getMarketStats')(marketCode="CHACLP")
     print(cha_stats)
 
-* To execute mutations use: ``ds.mutation(query_dsl)`` 
-* To execute queries use: ``ds.query(query_dsl)`` 
-* You can use dictionaries on parameters to specify objects like ``password`` parameter on ``loginWithPassword`` query used on ``orionxapi/connection_manager.py``
 
-* This DSL feature is achieved by using ``gql`` (https://github.com/graphql-python/gql)
-* See: https://github.com/graphql-python/gql/blob/master/tests/starwars/test_dsl.py
+* Para ejecutar ``mutations`` usar: ``ds.mutation(query_dsl)`` 
+* Para ejecutar ``queries`` usar: ``ds.query(query_dsl)`` 
+* Se pueden usar diccionarios en los argumentos para especificar objetos, como ocurre con el argumento ``password`` en la consulta ``loginWithPassword`` usada en ``orionxapi/connection_manager.py``
+
+* La funcionalidad de DSL es lograda gracias a ``gql`` (https://github.com/graphql-python/gql)
+* Véase como referencia: https://github.com/graphql-python/gql/blo
+
+Es posible configurar los parametros de conexión manualmente. Para esto se puede usar la clase ``OrionxApiClient`` como se muestra en el siguiente ejemplo. Nota: Véase instrucciones de como obtener los headers en la sección: Dónde encontrar los headers.
+
+b/master/tests/starwars/test_dsl.py
+
+.. code:: python
+
+    # This file is located at: examples/legacy_api.py
+
+    from orionxapi.client import OrionxApiClient
+
+    # handler initialization with custom headers
+    orionx_client = OrionxApiClient(additional_headers={
+                                    'login-token': '<your-login-token-here>',
+                                    'fingerprint': '<fingerprint-here>'})
+    my_info = orionx_client.execute_query('getMe')()
+    cha_stats = orionx_client.execute_query('getMarketStats')(marketCode="CHACLP")
+    print(my_info, cha_stats)
+
+    # bulk query support : send many queries in one single request:
+    # (register each query beforehand)
+    orionx_client.register_query('getMarketStats')(marketCode="CHACLP")
+    orionx_client.register_query('myOrders')(marketCode="CHACLP")
+    orionx_client.register_query('getMarketMid')(marketCode="CHACLP")
+    results = orionx_client.perform_queries()
+    print(results)
 
 
-Where do I find headers?
-========================
-Login into orionx.io, then on your favorite browser (valid for Chrome and Firefox) open Developers Tools or similar. Then go into ``Network`` tab and click over a graphql request with 200 status. Under **Request Headers** you may find each one of the values. Keep those values secure. You can override any header by passing a value to ``additional_headers`` initializer parameter.
+Para más información acerca de las consultas disponibles, véase: ``orionxapi/queries.py``
 
-NOTE
-====
-With the latest platform update, now you need to specify all the browser requests headers into this API. ;(
+
+Dónde encontrar los headers?
+============================
+
+Iniciar sesión dentro de orionx.io, luego en el navegador de preferencia (válido para Chrome y Firefox), abrir las Herramientas de desarrollador (Developer Tools). Luego ir a la pestaña ``Red`` o ``Network`` y hacer clic sobre una petición realizada a graphql con código 200. En **Request Headers** se podran encontrar cada uno de los parámetros necesarios. Mantener estos datos en un lugar seguro. Se puede sobreescribir cualquier header pasando valores al parametro de inicialización ``additional_headers`` de la clase ``OrionxApiClient``.
 
 .. |pypi| image:: https://badge.fury.io/py/orionx-api-client.svg
    :target: https://badge.fury.io/py/orionx-api-client
