@@ -37,10 +37,10 @@ class FetchMethod(object):
       else:
         return result
 
-  def get_kinds():
+  def get_kinds(self):
     return self.index.keys()
 
-  def get_names():
+  def get_names(self):
     result = set()
     for kind in self.index:
       result.update(self.index[kind].keys())

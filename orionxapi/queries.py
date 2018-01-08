@@ -1,297 +1,940 @@
-def _convert_amount(amount):
-    return int(100000000 * amount)
 
-def getOrderBook(marketCode="CHACLP"):
-    return {
-        "query": "query getOrderBook($marketCode: ID!) {\n  orderBook: marketOrderBook(marketCode: $marketCode, limit: 50) {\n    buy {\n      limitPrice\n      amount\n      __typename\n    }\n    sell {\n      limitPrice\n      amount\n      __typename\n    }\n    spread\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode
-        },
-        "operationName": "getOrderBook"
+# marketOrderBook
+query = gql('''
+  query getOrderBook($marketCode: ID!) {
+    orderBook: marketOrderBook(marketCode: $marketCode, limit: 50) {
+      buy {
+        limitPrice
+        amount
+        __typename
+      }
+      sell {
+        limitPrice
+        amount
+        __typename
+      }
+      spread
+      __typename
     }
+  }
+''')
 
-def getMarketStats(marketCode="CHACLP", aggregation="h1"):
-    return {
-        "query": "query getMarketStats($marketCode: ID!, $aggregation: MarketStatsAggregation!) {\n  marketStats(marketCode: $marketCode, aggregation: $aggregation) {\n    _id\n    open\n    close\n    high\n    low\n    volume\n    count\n    fromDate\n    toDate\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode,
-            "aggregation": aggregation
-        },
-        "operationName": "getMarketStats"
+params = {
+  "marketCode": "CHACLP"
+}
+
+operation_name = "getOrderBook"
+
+# marketStats
+query = gql('''
+  query getMarketStats($marketCode: ID!, $aggregation: MarketStatsAggregation!) {
+    marketStats(marketCode: $marketCode, aggregation: $aggregation) {
+      _id
+      open
+      close
+      high
+      low
+      volume
+      count
+      fromDate
+      toDate
+      __typename
     }
+  }
+''')
 
-def getMarketIdleData(code="CHACLP"):
-    return {
-        "query": "query getMarketIdleData($code: ID) {\n  market(code: $code) {\n    code\n    lastTrade {\n      price\n      __typename\n    }\n    secondaryCurrency {\n      code\n      units\n      format\n      longFormat\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {
-            "code": code
-        },
-        "operationName": "getMarketIdleData"
+params = {
+  "marketCode": "CHACLP",
+  "aggregation": "h1"
+}
+
+operation_name = "getMarketStats"
+
+# market
+query = gql('''
+  query getMarketIdleData($code: ID) {
+    market(code: $code) {
+      code
+      lastTrade {
+        price
+        __typename
+      }
+      secondaryCurrency {
+        code
+        units
+        format
+        longFormat
+        __typename
+      }
+      __typename
     }
+  }
+''')
 
-def getMarket(code="CHACLP"):
-    return {
-        "query": "query getMarket($code: ID!) {\n  market(code: $code) {\n    code\n    name\n    commission\n    mainCurrency {\n      ...getMarketCurrency\n      __typename\n    }\n    secondaryCurrency {\n      ...getMarketCurrency\n      __typename\n    }\n    __typename\n  }\n  me {\n    _id\n    marketFees(marketCode: $code) {\n      maker\n      taker\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment getMarketCurrency on Currency {\n  code\n  name\n  format\n  longFormat\n  units\n  symbol\n  round\n  wallet {\n    _id\n    balance\n    availableBalance\n    __typename\n  }\n  __typename\n}\n",
-        "variables": {
-            "code": code
-        },
-        "operationName": "getMarket"
+params = {
+  "code": "CHACLP"
+}
+
+operation_name = "getMarketIdleData"
+
+# market
+query = gql('''
+  query getMarket($code: ID!) {
+    market(code: $code) {
+      code
+      name
+      commission
+      mainCurrency {
+        ...getMarketCurrency
+        __typename
+      }
+      secondaryCurrency {
+        ...getMarketCurrency
+        __typename
+      }
+      __typename
     }
-
-def myOrders(marketCode="CHACLP"):
-    return {
-        "query": "query myOrders($marketCode: ID!) {\n  orders(marketCode: $marketCode, onlyOpen: true, limit: 0) {\n    totalCount\n    items {\n      _id\n      sell\n      type\n      amount\n      amountToHold\n      secondaryAmount\n      filled\n      secondaryFilled\n      limitPrice\n      createdAt\n      isStop\n      status\n      stopPriceUp\n      stopPriceDown\n      market {\n        name\n        code\n        mainCurrency {\n          code\n          format\n          longFormat\n          units\n          __typename\n        }\n        secondaryCurrency {\n          code\n          format\n          longFormat\n          units\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode
-        },
-        "operationName": "myOrders"
+    me {
+      _id
+      marketFees(marketCode: $code) {
+        maker
+        taker
+        __typename
+      }
+      __typename
     }
+  }
 
-def getHistory(marketCode="CHACLP"):
-    return {
-        "query": "query getHistory($marketCode: ID!) {\n  history: marketTradeHistory(marketCode: $marketCode) {\n    _id\n    amount\n    price\n    date\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode
-        },
-        "operationName": "getHistory"
+  fragment getMarketCurrency on Currency {
+    code
+    name
+    format
+    longFormat
+    units
+    symbol
+    round
+    wallet {
+      _id
+      balance
+      availableBalance
+      __typename
     }
+    __typename
+  }
+''')
 
-def cancelOrder(orderId):
-    return {
-        "query": "mutation cancelOrder($orderId: ID) {\n  cancelOrder(orderId: $orderId) {\n    _id\n    __typename\n  }\n}\n",
-        "variables": {
-            "orderId": orderId
-        },
-        "operationName": "cancelOrder"
+params = {
+  "code": "CHACLP"
+}
+
+operation_name = "getMarket"
+
+# orders
+query = gql('''
+  query myOrders($marketCode: ID!) {
+    orders(marketCode: $marketCode, onlyOpen: true, limit: 0) {
+      totalCount
+      items {
+        _id
+        sell
+        type
+        amount
+        amountToHold
+        secondaryAmount
+        filled
+        secondaryFilled
+        limitPrice
+        createdAt
+        isStop
+        status
+        stopPriceUp
+        stopPriceDown
+        market {
+          name
+          code
+          mainCurrency {
+            code
+            format
+            longFormat
+            units
+            __typename
+          }
+          secondaryCurrency {
+            code
+            format
+            longFormat
+            units
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
     }
+  }
+''')
 
-def placeLimitOrder(marketCode="CHACLP", amount=20000000, limitPrice=7000, sell=True):
-    return {
-        "query": "mutation placeLimitOrder($marketCode: ID, $amount: BigInt, $limitPrice: BigInt, $sell: Boolean) {\n  placeLimitOrder(marketCode: $marketCode, amount: $amount, limitPrice: $limitPrice, sell: $sell) {\n    _id\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode,
-            "amount": _convert_amount(amount),
-            "limitPrice": _convert_amount(limitPrice),
-            "sell": sell
-        },
-        "operationName": "placeLimitOrder"
+params = {
+  "marketCode": "CHACLP"
+}
+
+operation_name = "myOrders"
+
+
+# marketTradeHistory
+query = gql('''
+  query getHistory($marketCode: ID!) {
+    history: marketTradeHistory(marketCode: $marketCode) {
+      _id
+      amount
+      price
+      date
+      __typename
     }
+  }
+''')
 
-def myClosedOrders(marketCode="CHACLP", page=1):
-    return {
-        "query": "query myClosedOrders($marketCode: ID!, $page: Int) {\n  orders(marketCode: $marketCode, onlyClosed: true, limit: 50, page: $page) {\n    totalCount\n    hasNextPage\n    page\n    items {\n      _id\n      sell\n      type\n      amount\n      amountToHold\n      secondaryAmount\n      filled\n      closedAt\n      secondaryFilled\n      limitPrice\n      createdAt\n      activatedAt\n      isStop\n      status\n      stopPriceUp\n      stopPriceDown\n      market {\n        name\n        code\n        mainCurrency {\n          code\n          format\n          longFormat\n          units\n          __typename\n        }\n        secondaryCurrency {\n          code\n          format\n          longFormat\n          units\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode,
-            "page": page
-        },
-        "operationName": "myClosedOrders"
+params = {
+  "marketCode": "CHACLP"
+}
+
+operation_name = "getHistory"
+
+
+# cancelOrder
+query = gql('''
+  mutation cancelOrder($orderId: ID) {
+    cancelOrder(orderId: $orderId) {
+      _id
+      __typename
     }
+  }
+''')
 
-def placeMarketOrder(marketCode="CHACLP", amount=1000, sell=False):
-    return {
-        "query": "mutation placeMarketOrder($marketCode: ID, $amount: BigInt, $sell: Boolean) {\n  placeMarketOrder(marketCode: $marketCode, amount: $amount, sell: $sell) {\n    _id\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode,
-            "amount": _convert_amount(amount),
-            "sell": sell
-        },
-        "operationName": "placeMarketOrder"
+params = {
+  "orderId": ''
+}
+
+operation_name = "cancelOrder"
+
+
+# placeLimitOrder
+query = gql('''
+  mutation placeLimitOrder($marketCode: ID, $amount: BigInt, $limitPrice: BigInt, $sell: Boolean) {
+    placeLimitOrder(marketCode: $marketCode, amount: $amount, limitPrice: $limitPrice, sell: $sell) {
+      _id
+      __typename
     }
+  }
+''')
 
-def placeStopLimitOrder(marketCode="CHACLP", amount=100000000000000, limitPrice=10000, sell=False, stopPriceUp=40000, stopPriceDown=40000):
-    return {
-        "query": "mutation placeStopLimitOrder($marketCode: ID, $stopPriceUp: BigInt, $stopPriceDown: BigInt, $amount: BigInt, $limitPrice: BigInt, $sell: Boolean) {\n  placeStopLimitOrder(marketCode: $marketCode, stopPriceUp: $stopPriceUp, stopPriceDown: $stopPriceDown, amount: $amount, limitPrice: $limitPrice, sell: $sell) {\n    _id\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode,
-            "amount": _convert_amount(amount),
-            "limitPrice": _convert_amount(limitPrice),
-            "sell": sell,
-            "stopPriceUp": _convert_amount(stopPriceUp),
-            "stopPriceDown": _convert_amount(stopPriceDown)
-        },
-        "operationName": "placeStopLimitOrder"
+params = {
+  "marketCode": "CHACLP",
+  "amount": 2,
+  "limitPrice": 3,
+  "sell": True
+}
+
+operation_name = "placeLimitOrder"
+
+# orders
+query = gql('''
+  query myClosedOrders($marketCode: ID!, $page: Int) {
+    orders(marketCode: $marketCode, onlyClosed: true, limit: 50, page: $page) {
+      totalCount
+      hasNextPage
+      page
+      items {
+        _id
+        sell
+        type
+        amount
+        amountToHold
+        secondaryAmount
+        filled
+        closedAt
+        secondaryFilled
+        limitPrice
+        createdAt
+        activatedAt
+        isStop
+        status
+        stopPriceUp
+        stopPriceDown
+        market {
+          name
+          code
+          mainCurrency {
+            code
+            format
+            longFormat
+            units
+            __typename
+          }
+          secondaryCurrency {
+            code
+            format
+            longFormat
+            units
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
     }
+  }
+''')
 
-def getMyTwoFactorSettings():
-    return {
-        "query": "query getMyTwoFactorSettings {\n  me {\n    _id\n    profile {\n      firstName\n      lastName\n      __typename\n    }\n    hasTwoFactor\n    __typename\n  }\n}\n",
-        "variables": {},
-        "operationName": "getMyTwoFactorSettings"
+params = {
+  "marketCode": "CHACLP",
+  "page": 1
+}
+
+operation_name = "myClosedOrders"
+
+# placeMarketOrder
+query = gql('''
+  mutation placeMarketOrder($marketCode: ID, $amount: BigInt, $sell: Boolean) {
+    placeMarketOrder(marketCode: $marketCode, amount: $amount, sell: $sell) {
+      _id
+      __typename
     }
+  }
+''')
 
-def getMarkets():
-    return {
-        "query": "query getMarkets {\n  clpMarkets: markets(secondaryCurrencyCode: \"CLP\") {\n    ...exchangeNavbarMarkets\n    __typename\n  }\n  btcMarkets: markets(secondaryCurrencyCode: \"BTC\") {\n    ...exchangeNavbarMarkets\n    __typename\n  }\n}\n\nfragment exchangeNavbarMarkets on Market {\n  code\n  name\n  lastTrade {\n    price\n    __typename\n  }\n  currentStats(aggregation: d1) {\n    close\n    open\n    volume\n    variation\n    __typename\n  }\n  secondaryCurrency {\n    symbol\n    format\n    units\n    __typename\n  }\n  __typename\n}\n",
-        "variables": {},
-        "operationName": "getMarkets"
+params = {
+  "marketCode": "CHACLP",
+  "amount": 1,
+  "sell": True
+}
+
+operation_name = "placeMarketOrder"
+
+# placeStopLimitOrder
+query = gql('''
+  mutation placeStopLimitOrder($marketCode: ID, $stopPriceUp: BigInt, $stopPriceDown: BigInt, $amount: BigInt, $limitPrice: BigInt, $sell: Boolean) {
+    placeStopLimitOrder(marketCode: $marketCode, stopPriceUp: $stopPriceUp, stopPriceDown: $stopPriceDown, amount: $amount, limitPrice: $limitPrice, sell: $sell) {
+      _id
+      __typename
     }
+  }
+''')
 
-def marketCurrentStats(marketCode="CHACLP"):
-    return {
-        "query": "query marketCurrentStats($marketCode: ID!) {\n  market(code: $marketCode) {\n    code\n    name\n    lastTrade {\n      price\n      __typename\n    }\n    mainCurrency {\n      code\n      units\n      format\n      __typename\n    }\n    secondaryCurrency {\n      code\n      units\n      format\n      __typename\n    }\n    __typename\n  }\n  stats: marketCurrentStats(marketCode: $marketCode, aggregation: d1) {\n    close\n    volume\n    variation\n    __typename\n  }\n}\n",
-        "variables": {
-            "marketCode": marketCode
-        },
-        "operationName": "marketCurrentStats"
+params = {
+  "marketCode": "CHACLP",
+  "amount": 1,
+  "limitPrice": 2,
+  "sell": False,
+  "stopPriceUp": 3,
+  "stopPriceDown": 4
+}
+
+operation_name = "placeStopLimitOrder"
+
+
+# me
+query = gql('''
+  query getMyTwoFactorSettings {
+    me {
+      _id
+      profile {
+        firstName
+        lastName
+        __typename
+      }
+      hasTwoFactor
+      __typename
     }
+  }
+''')
 
-def getEstimate(marketCode="CHACLP", amount=100000000, sell=False):
-    return {
-        "query": "query getEstimate($marketCode: ID!, $amount: Float!, $sell: Boolean!) {\n      estimate: marketEstimateAmountToRecieve(marketCode: $marketCode, amount: $amount, sell: $sell)\n    }\n  ",
-        "variables": {
-            "marketCode": marketCode,
-            "amount": _convert_amount(amount),
-            "sell": sell
-        },
-        "operationName": "getEstimate"
+params = {}
+
+operation_name = "getMyTwoFactorSettings"
+
+# markets
+query = gql('''
+  query getMarkets {
+    clpMarkets: markets(secondaryCurrencyCode: \"CLP\") {
+      ...exchangeNavbarMarkets
+      __typename
     }
-
-def getMarketMid(marketCode="CHACLP"):
-    return {
-        "query": "query getMarketMid($marketCode: ID!) {\n      orderBook: marketOrderBook(marketCode: $marketCode) {\n        mid\n      }\n    }\n  ",
-        "variables": {
-            "marketCode": marketCode
-        },
-        "operationName": "getMarketMid"
+    btcMarkets: markets(secondaryCurrencyCode: \"BTC\") {
+      ...exchangeNavbarMarkets
+      __typename
     }
+  }
 
-def getDepthData(marketCode="CHACLP", limit=100):
-    return {
-        "query": "query getDepthData($marketCode: ID!, $limit: Int) {\n      orderBook: marketOrderBook(marketCode: $marketCode, limit: $limit) {\n        mid\n        buy {\n          limitPrice\n          accumulated\n          accumulatedPrice\n        }\n        sell {\n          limitPrice\n          accumulated\n          accumulatedPrice\n        }\n      }\n    }\n  ",
-        "variables": {
-            "marketCode": marketCode,
-            "limit": limit
-        },
-        "operationName": "getDepthData"
+  fragment exchangeNavbarMarkets on Market {
+    code
+    name
+    lastTrade {
+      price
+      __typename
     }
-
-def createNewAddress(walletId):
-    return {
-        "query": "mutation createNewAddress($walletId: ID) {\n  createNewAddress(walletId: $walletId) {\n    _id\n    lastCryptoAddress {\n      _id\n      code\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {
-            "walletId": walletId
-        },
-        "operationName": "createNewAddress"
+    currentStats(aggregation: d1) {
+      close
+      open
+      volume
+      variation
+      __typename
     }
-
-def getWallet(code="BTC"):
-    return {
-        "query": "query getWallet($code: ID) {\n  me {\n    _id\n    __typename\n  }\n  wallet(code: $code) {\n    _id\n    currency {\n      code\n      units\n      isCrypto\n      format\n      longFormat\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {
-            "code": code
-        },
-        "operationName": "getWallet"
+    secondaryCurrency {
+      symbol
+      format
+      units
+      __typename
     }
+    __typename
+  }
+''')
 
-def getCurrencyInfo(code="BTC"):
-    return {
-        "query": "query getCurrencyInfo($code: ID!) {\n  me {\n    _id\n    __typename\n  }\n  wallet(code: $code) {\n    _id\n    __typename\n  }\n  currency(code: $code) {\n    code\n    units\n    round\n    symbol\n    format\n    isCrypto\n    name\n    __typename\n  }\n  ...noCryptoRecieve\n  ...cryptoRecieve\n}\n\nfragment noCryptoRecieve on Query {\n  me {\n    limits(currencyCode: $code) {\n      totalInInMonth\n      availableInInMonth\n      limit\n      __typename\n    }\n    bankAccounts(currencyCode: $code) {\n      _id\n      name\n      verified\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment cryptoRecieve on Query {\n  me {\n    _id\n    __typename\n  }\n  wallet(code: $code) {\n    _id\n    lastCryptoAddress {\n      _id\n      code\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n",
-        "variables": {
-            "code": code
-        },
-        "operationName": "getCurrencyInfo"
+params = {},
+
+operation_name = "getMarkets"
+
+
+# market
+query = gql('''
+  query marketCurrentStats($marketCode: ID!) {
+    market(code: $marketCode) {
+      code
+      name
+      lastTrade {
+        price
+        __typename
+      }
+      mainCurrency {
+        code
+        units
+        format
+        __typename
+      }
+      secondaryCurrency {
+        code
+        units
+        format
+        __typename
+      }
+      __typename
     }
-
-def updateWalletBalance(walletId):
-    return {
-        "query": "mutation updateWalletBalance($walletId: ID) {\n  updateWalletBalance(walletId: $walletId) {\n    _id\n    balance\n    availableBalance\n    unconfirmedBalance\n    __typename\n  }\n}\n",
-        "variables": {
-            "walletId": walletId
-        },
-        "operationName": "updateWalletBalance"
+    stats: marketCurrentStats(marketCode: $marketCode, aggregation: d1) {
+      close
+      volume
+      variation
+      __typename
     }
+  }
+'''),
+params = {
+  "marketCode": "CHACLP"
+}
 
-def getLastWalletTransactions(walletId):
-    return {
-        "query": "query getLastWalletTransactions($walletId: ID) {\n  transactions(walletId: $walletId, limit: 5, sortBy: \"date\", sortType: DESC) {\n    items {\n      _id\n      ...walletLastTransactions\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment walletLastTransactions on Transaction {\n  amount\n  date\n  type\n  adds\n  balance\n  commission\n  description\n  hash\n  explorerURL\n  market {\n    mainCurrency {\n      code\n      __typename\n    }\n    __typename\n  }\n  pairCurrency {\n    name\n    __typename\n  }\n  __typename\n}\n",
-        "variables": {
-            "walletId": walletId
-        },
-        "operationName": "getLastWalletTransactions"
+operation_name = "marketCurrentStats"
+
+
+# marketEstimateAmountToRecieve
+query = gql('''
+  query getEstimate($marketCode: ID!, $amount: Float!, $sell: Boolean!) {
+    estimate: marketEstimateAmountToRecieve(marketCode: $marketCode, amount: $amount, sell: $sell)
+  }
+''')
+
+params = {
+  "marketCode": "CHACLP",
+  "amount": 1,
+  "sell": False
+}
+
+operation_name = "getEstimate"
+
+# marketOrderBook
+query = gql('''
+  query getMarketMid($marketCode: ID!) {
+    orderBook: marketOrderBook(marketCode: $marketCode) {
+      mid
     }
+  }
+''')
 
-def paginated_transactions(walletId, limit=10, page=1, sortBy="date", sortType="DESC"):
-    return {
-        "query": "query paginated_transactions($page: Int, $limit: Int, $sortBy: String, $sortType: SortType, $filter: String, $walletId: ID) {\n  result: transactions(page: $page, limit: $limit, sortBy: $sortBy, sortType: $sortType, filter: $filter, walletId: $walletId) {\n    _id\n    totalCount\n    totalPages\n    hasNextPage\n    hasPreviousPage\n    items {\n      _id\n      adds\n      amount\n      commission\n      balance\n      type\n      date\n      market {\n        name\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {
-            "limit": limit,
-            "page": page,
-            "sortBy": sortBy,
-            "sortType": sortType,
-            "walletId": walletId
-        },
-        "operationName": "paginated_transactions"
+params = {
+  "marketCode": "CHACLP"
+}
+
+operation_name = "getMarketMid"
+
+
+# marketOrderBook
+query = gql('''
+  query getDepthData($marketCode: ID!, $limit: Int) {
+    orderBook: marketOrderBook(marketCode: $marketCode, limit: $limit) {
+      mid
+      buy {
+        limitPrice
+        accumulated
+        accumulatedPrice
+      }
+      sell {
+        limitPrice
+        accumulated
+        accumulatedPrice
+      }
     }
+  }
+''')
 
-def getMyPaymentsWithError():
-    return {
-        "query": "query getMyPaymentsWithError {\n  currency(code: \"CLP\") {\n    code\n    format\n    symbol\n    units\n    __typename\n  }\n  me {\n    _id\n    paymentsWithError {\n      _id\n      createdAt\n      origin\n      originName\n      originRut\n      originBank\n      amount\n      error\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {},
-        "operationName": "getMyPaymentsWithError"
+params = {
+  "marketCode": "CHACLP",
+  "limit": 100
+}
+
+operation_name = "getDepthData"
+
+
+# createNewAddress
+query = gql('''
+  mutation createNewAddress($walletId: ID) {
+    createNewAddress(walletId: $walletId) {
+      _id
+      lastCryptoAddress {
+        _id
+        code
+        __typename
+      }
+      __typename
     }
+  }
+''')
 
-def getMyVerification():
-    return {
-        "query": "query getMyVerification {\n  me {\n    _id\n    verification {\n      verifiedLevel {\n        code\n        name\n        __typename\n      }\n      nextLevel {\n        code\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {},
-        "operationName": "getMyVerification"
+params = {
+  "walletId": "123123"
+}
+
+operation_name = "createNewAddress"
+
+# me
+# wallet
+query = gql('''
+  query getWallet($code: ID) {
+    me {
+      _id
+      __typename
     }
-
-def getUserWallets():
-    return {
-        "query": "query getUserWallets {\n  me {\n    _id\n    wallets {\n      currency {\n        code\n        __typename\n      }\n      ...walletListItem\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment walletListItem on Wallet {\n  _id\n  balance\n  currency {\n    code\n    units\n    name\n    symbol\n    format\n    isCrypto\n    minimumAmountToSend\n    __typename\n  }\n  __typename\n}\n",
-        "variables": {},
-        "operationName": "getUserWallets"
+    wallet(code: $code) {
+      _id
+      currency {
+        code
+        units
+        isCrypto
+        format
+        longFormat
+        __typename
+      }
+      __typename
     }
+  }
+''')
 
-def addressIsInternal(address="", currencyCode="BTC"):
-    return {
-        "query": "query ($address: ID, $currencyCode: ID!) {\n  isInternal: addressIsInternal(address: $address, currencyCode: $currencyCode)\n}\n",
-        "variables": {
-            "address": address,
-            "currencyCode": currencyCode
-        },
-        "operationName": None
+params = {
+  "code": "BTC"
+}
+
+operation_name = "getWallet"
+
+# me
+# wallet
+# currency
+query = gql('''
+  query getCurrencyInfo($code: ID!) {
+    me {
+      _id
+      __typename
     }
-
-
-def send(fromWalletId, toAddressCode, amount=100000000, fee=110):
-    return {
-        "query": "mutation send($fromWalletId: ID!, $toAddressCode: ID!, $amount: BigInt!, $fee: BigInt!, $description: String, $twoFactorCode: String) {\n  sendCrypto(fromWalletId: $fromWalletId, toAddressCode: $toAddressCode, amount: $amount, fee: $fee, description: $description, twoFactorCode: $twoFactorCode) {\n    _id\n    __typename\n  }\n}\n",
-        "variables": {
-            "fromWalletId": fromWalletId,
-            "toAddressCode": toAddressCode,
-            "amount": _convert_amount(amount),
-            "fee": _convert_amount(fee)
-        },
-        "operationName": "send"
+    wallet(code: $code) {
+      _id
+      __typename
     }
-
-def currencyTransformFactor(inCurrencyCode="BTC", outCurrencyCode=None):
-    return {
-        "query": "query currencyTransformFactor($inCurrencyCode: ID!, $outCurrencyCode: ID) {\n  currencyTransformFactor(inCurrencyCode: $inCurrencyCode, outCurrencyCode: $outCurrencyCode) {\n    factor\n    outCurrency {\n      code\n      units\n      format\n      symbol\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {
-            "inCurrencyCode": inCurrencyCode,
-            "outCurrencyCode": outCurrencyCode
-        },
-        "operationName": "currencyTransformFactor"
+    currency(code: $code) {
+      code
+      units
+      round
+      symbol
+      format
+      isCrypto
+      name
+      __typename
     }
+    ...noCryptoRecieve
+    ...cryptoRecieve
+  }
 
-def getMe():
-    return {
-        "query": "query getMe {\n  me {\n    _id\n    intercomHash\n    email\n    createdAt\n    roles\n    profile {\n      firstName\n      lastName\n      phone\n      phoneVerified\n      __typename\n    }\n      emails {\n      address\n      verified\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "operationName": "getMe"
+  fragment noCryptoRecieve on Query {
+    me {
+      limits(currencyCode: $code) {
+        totalInInMonth
+        availableInInMonth
+        limit
+        __typename
+      }
+      bankAccounts(currencyCode: $code) {
+        _id
+        name
+        verified
+        __typename
+      }
+      __typename
     }
+    __typename
+  }
 
-def paginated_cryptoAddresses(userId, limit=10, page=1, currencyCode="CHA"):
-    return {
-        "query": "query paginated_cryptoAddresses($page: Int, $limit: Int, $sortBy: String, $sortType: SortType, $filter: String, $currencyCode: ID!, $userId: ID) {\n  result: cryptoAddresses(page: $page, limit: $limit, sortBy: $sortBy, sortType: $sortType, filter: $filter, currencyCode: $currencyCode, userId: $userId) {\n    _id\n    totalCount\n    totalPages\n    hasNextPage\n    hasPreviousPage\n    items {\n      _id\n      code\n      updatedAt\n      createdAt\n      __typename\n    }\n    __typename\n  }\n}\n",
-        "variables": {
-            "limit": limit,
-            "page": page,
-            "currencyCode": currencyCode,
-            "userId": userId
-        },
-        "operationName": "paginated_cryptoAddresses"
+  fragment cryptoRecieve on Query {
+    me {
+      _id
+      __typename
     }
+    wallet(code: $code) {
+      _id
+      lastCryptoAddress {
+        _id
+        code
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+''')
+
+params = {
+  "code": "BTC"
+}
+
+operation_name = "getCurrencyInfo"
+
+
+# updateWalletBalance
+query = gql('''
+  mutation updateWalletBalance($walletId: ID) {
+    updateWalletBalance(walletId: $walletId) {
+      _id
+      balance
+      availableBalance
+      unconfirmedBalance
+      __typename
+    }
+  }
+''')
+
+params = {
+    "walletId": "123123123"
+}
+
+operation_name = "updateWalletBalance"
+
+
+# transactions
+query = gql('''
+  query getLastWalletTransactions($walletId: ID) {
+    transactions(walletId: $walletId, limit: 5, sortBy: \"date\", sortType: DESC) {
+      items {
+        _id
+        ...walletLastTransactions
+        __typename
+      }
+      __typename
+    }
+  }
+
+  fragment walletLastTransactions on Transaction {
+    amount
+    date
+    type
+    adds
+    balance
+    commission
+    description
+    hash
+    explorerURL
+    market {
+      mainCurrency {
+        code
+        __typename
+      }
+      __typename
+    }
+    pairCurrency {
+      name
+      __typename
+    }
+    __typename
+  }
+''')
+
+params = {
+  "walletId": "123123"
+}
+
+operation_name = "getLastWalletTransactions"
+
+
+# transactions
+query = gql('''
+  query paginated_transactions($page: Int, $limit: Int, $sortBy: String, $sortType: SortType, $filter: String, $walletId: ID) {
+    result: transactions(page: $page, limit: $limit, sortBy: $sortBy, sortType: $sortType, filter: $filter, walletId: $walletId) {
+      _id
+      totalCount
+      totalPages
+      hasNextPage
+      hasPreviousPage
+      items {
+        _id
+        adds
+        amount
+        commission
+        balance
+        type
+        date
+        market {
+          name
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+  }
+''')
+
+params = {
+  "limit": 10,
+  "page": 1,
+  "sortBy": "date",
+  "sortType": "DESC",
+  "walletId": "123123"
+}
+
+operation_name = "paginated_transactions"
+
+
+# currency
+query = gql('''
+  query getMyPaymentsWithError {
+    currency(code: \"CLP\") {
+      code
+      format
+      symbol
+      units
+      __typename
+    }
+    me {
+      _id
+      paymentsWithError {
+        _id
+        createdAt
+        origin
+        originName
+        originRut
+        originBank
+        amount
+        error
+        __typename
+      }
+      __typename
+    }
+  }
+''')
+
+params = {}
+
+operation_name = "getMyPaymentsWithError"
+
+
+
+# me
+query = gql('''
+  query getMyVerification {
+    me {
+      _id
+      verification {
+        verifiedLevel {
+          code
+          name
+          __typename
+        }
+        nextLevel {
+          code
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+  }
+''')
+
+params = {}
+operation_name = "getMyVerification"
+
+# me
+query = gql('''
+  query getUserWallets {
+    me {
+      _id
+      wallets {
+        currency {
+          code
+          __typename
+        }
+        ...walletListItem
+        __typename
+      }
+      __typename
+    }
+  }
+
+  fragment walletListItem on Wallet {
+    _id
+    balance
+    currency {
+      code
+      units
+      name
+      symbol
+      format
+      isCrypto
+      minimumAmountToSend
+      __typename
+    }
+    __typename
+  }
+''')
+
+params = {}
+
+operation_name = "getUserWallets"
+
+
+# addressIsInternal
+query = gql('''
+  query ($address: ID, $currencyCode: ID!) {
+    isInternal: addressIsInternal(address: $address, currencyCode: $currencyCode)
+  }
+''')
+
+params = {
+  "address": "",
+  "currencyCode": "BTC"
+}
+
+operation_name = None
+
+
+
+# sendCrypto
+query = gql('''
+  mutation send($fromWalletId: ID!, $toAddressCode: ID!, $amount: BigInt!, $fee: BigInt!, $description: String, $twoFactorCode: String) {
+    sendCrypto(fromWalletId: $fromWalletId, toAddressCode: $toAddressCode, amount: $amount, fee: $fee, description: $description, twoFactorCode: $twoFactorCode) {
+      _id
+      __typename
+    }
+  }
+''')
+
+params = {
+  "fromWalletId": "123123",
+  "toAddressCode": "123123",
+  "amount": 1,
+  "fee": 2
+}
+
+operation_name = "send"
+
+
+# currencyTransformFactor
+query = gql('''
+  query currencyTransformFactor($inCurrencyCode: ID!, $outCurrencyCode: ID) {
+    currencyTransformFactor(inCurrencyCode: $inCurrencyCode, outCurrencyCode: $outCurrencyCode) {
+      factor
+      outCurrency {
+        code
+        units
+        format
+        symbol
+        __typename
+      }
+      __typename
+    }
+  }
+''')
+
+params = {
+  "inCurrencyCode": "BTC",
+  "outCurrencyCode": None
+}
+
+operation_name = "currencyTransformFactor"
+
+
+# me
+query = gql('''
+  query getMe {
+    me {
+      _id
+      intercomHash
+      email
+      createdAt
+      roles
+      profile {
+        firstName
+        lastName
+        phone
+        phoneVerified
+        __typename
+      }
+        emails {
+        address
+        verified
+        __typename
+      }
+      __typename
+    }
+  }
+''')
+
+operation_name = "getMe"
+
+
+# cryptoAddresses
+query = gql('''
+  query paginated_cryptoAddresses($page: Int, $limit: Int, $sortBy: String, $sortType: SortType, $filter: String, $currencyCode: ID!, $userId: ID) {
+    result: cryptoAddresses(page: $page, limit: $limit, sortBy: $sortBy, sortType: $sortType, filter: $filter, currencyCode: $currencyCode, userId: $userId) {
+      _id
+      totalCount
+      totalPages
+      hasNextPage
+      hasPreviousPage
+      items {
+        _id
+        code
+        updatedAt
+        createdAt
+        __typename
+      }
+      __typename
+    }
+  }
+''')
+
+params = {
+  "limit": 10,
+  "page": 1,
+  "currencyCode": "CHA",
+  "userId": "123123"
+}
+
+operation_name = "paginated_cryptoAddresses"
+
 #[{"data":{"placeLimitOrder":null},"errors":[{"message":"Fondos insuficientes, tienes 0 [insufficientFunds]","path":["placeLimitOrder"],"details":{"code":"insufficientFunds","reason":"Fondos insuficientes, tienes 0","errorType":"userError"}}]}]
