@@ -1,5 +1,4 @@
 from orionxapi.connection_manager import client
-from orionxapi.lib.dsl import DSLSchema
 from gql import gql
 import hashlib
 from getpass import getpass
