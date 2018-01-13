@@ -70,6 +70,16 @@ Los parámetros ``headers_filename`` y ``cookies_filename`` corresponden a las r
 * La funcionalidad de DSL es lograda gracias a ``gql`` (https://github.com/graphql-python/gql)
 * Véase como referencia: https://github.com/graphql-python/gql/blo
 
+Query Batching
+==============
+
+Es posible acelerar las consultas realizándolas simultaneamente usando un cliente especial. Véase ``examples/using_batcher.py``
+Implementación basada en: https://dev-blog.apollodata.com/query-batching-in-apollo-63acfd859862
+
+
+Legacy API
+==========
+
 Es posible configurar los parametros de conexión manualmente. Para esto se puede usar la clase ``OrionxApiClient`` como se muestra en el siguiente ejemplo. Nota: Véase instrucciones de como obtener los headers en la sección: Dónde encontrar los headers.
 
 b/master/tests/starwars/test_dsl.py

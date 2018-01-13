@@ -27,7 +27,7 @@ params = {
 
 operation_name = "getOrderBook"
 
-print(client.execute(query, variable_values=params))
+print(client.execute(query, variable_values=params).data)
 
 # marketStats
 query = gql('''

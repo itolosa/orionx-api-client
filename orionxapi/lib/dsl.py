@@ -32,7 +32,9 @@ import six
 from graphql.language import ast
 from graphql.language.printer import print_ast
 from graphql.type import (GraphQLField, GraphQLList,
-                          GraphQLNonNull, GraphQLEnumType, GraphQLObjectType, GraphQLInputObjectField,GraphQLInputObjectType)
+                          GraphQLNonNull, GraphQLEnumType,
+                          GraphQLObjectType, GraphQLInputObjectField,
+                          GraphQLInputObjectType)
 
 from .utils import to_camel_case
 
