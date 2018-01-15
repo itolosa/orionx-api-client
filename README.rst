@@ -28,6 +28,8 @@ La librería soporta Python 2.7, 3.4, 3.5, y 3.6.
 Ejemplo
 =======
 
+Para ejecutar los ejemplos se requieren las API Key y Secret Key que se puede obtener siguiendo [estas instrucciones](https://www.orionx.io/developers/tutorials/creacion-api-key)
+
 .. code:: python
 
     # This file is located at: examples/using_manager.py
