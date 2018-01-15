@@ -1,9 +1,9 @@
-from orionxapi.connection_manager import batch_client, as_completed
-from gql import gql
+from orionxapi import client, as_completed
+from pygql import gql
 
-
-client = batch_client(headers_filename='cache/headers.json',
-                cookies_filename='cache/cookies.json')
+api_key = 'API_KEY'
+secret_key = 'SECRET_KEY'
+client = client(api_key, secret_key, use_batching=True)
 
 results = []
 # marketOrderBook
