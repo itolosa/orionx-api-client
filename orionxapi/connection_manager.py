@@ -1,15 +1,14 @@
-from gql import gql, Client
+from pygql import gql, Client
+from pygql.transport.batch_transport import BatchTransport
+from pygql.transport.session_transport import SessionTransport
+from pygql.dsl import DSLSchema
 import getpass
 import ujson
 import requests
 from fake_useragent import UserAgent
 import hashlib
 import datetime
-from .lib.dsl import DSLSchema
-from .lib.custom_transport import CustomTransport
-from .lib.batch_transport import BatchTransport
 from .client import OrionxApiClient
-from .lib.batch_client import BatchClient
 import sys
 import concurrent.futures
 
@@ -72,7 +71,7 @@ def conn_manager(headers_filename, cookies_filename):
     request = sess.get('https://orionx.io/login')
     request.raise_for_status()
 
-    cs = CustomTransport(url=endpoint_url, use_json=True, timeout=5,
+    cs = SessionTransport(url=endpoint_url, use_json=True, timeout=5,
         headers=sess.headers, cookies=requests.utils.dict_from_cookiejar(sess.cookies))
     client = Client(retries=3, transport=cs,
         fetch_schema_from_transport=True)
@@ -126,7 +125,7 @@ def conn_manager(headers_filename, cookies_filename):
 def client(headers_filename, cookies_filename):
   endpoint_url = 'https://api.orionx.io/graphql'
   headers, cookies = conn_manager(headers_filename, cookies_filename)
-  cs = CustomTransport(url=endpoint_url, use_json=True, timeout=5, 
+  cs = SessionTransport(url=endpoint_url, use_json=True, timeout=5, 
     headers=headers, cookies=cookies)
   client = Client(retries=3, transport=cs, fetch_schema_from_transport=True)
   return client
@@ -136,7 +135,7 @@ def batch_client(headers_filename, cookies_filename):
   headers, cookies = conn_manager(headers_filename, cookies_filename)
   cs = BatchTransport(url=endpoint_url, use_json=True, timeout=5, 
     headers=headers, cookies=cookies)
-  client = BatchClient(retries=3, transport=cs, fetch_schema_from_transport=True)
+  client = Client(retries=3, transport=cs, fetch_schema_from_transport=True)
   return client
 
 def orionxapi_builder(headers_filename, cookies_filename):

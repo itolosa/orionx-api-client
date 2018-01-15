@@ -1,5 +1,12 @@
 language: python
-rvm:
- - 2.2
- - jruby
- - rbx-3
+sudo: false
+python:
+- 2.7
+- 3.3
+- 3.4
+- 3.5
+cache: pip
+install:
+- pip install -e .
+after_success:
+- coveralls

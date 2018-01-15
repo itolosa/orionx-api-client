@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-
+import sys
 import orionxapi
 
 long_desc = '''Orionx API Client for Python is a client 
@@ -12,9 +12,12 @@ install_requires = [
   'six==1.11.0',
   'ujson==1.35',
   'graphql-core==2.0',
-  'gql==0.1.0',
+  'pygql==0.1.1',
   'fake-useragent==0.1.8'
 ]
+
+if sys.version_info < (3, 5):
+    install_requires.append('futures')
 
 version = orionxapi.__version__
 
