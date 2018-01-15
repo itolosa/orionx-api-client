@@ -32,15 +32,16 @@ Ejemplo
 
     # This file is located at: examples/using_manager.py
 
-    from orionxapi import client
-    
+    from orionxapi import client, as_completed
+    from pygql import gql
+    from pygql.dsl import DSLSchema
+
     api_key = 'API_KEY'
     secret_key = 'SECRET_KEY'
-
     client = client(api_key, secret_key)
 
     ds = DSLSchema(client)
-    
+
     query_dsl = ds.Query.marketStats.args(
                     marketCode="CHACLP", 
                     aggregation="h1"
@@ -60,7 +61,9 @@ Es posible acelerar las consultas realizándolas simultaneamente usando el param
 
 .. code:: python
 
-    from orionxapi import client
+    from orionxapi import client, as_completed
+    from pygql import gql
+    from pygql.dsl import DSLSchema
     
     api_key = 'API_KEY'
     secret_key = 'SECRET_KEY'
