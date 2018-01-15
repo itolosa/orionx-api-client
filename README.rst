@@ -32,7 +32,7 @@ Ejemplo
 
     # This file is located at: examples/using_manager.py
 
-    from orionxapi import client, as_completed
+    from orionxapi import client
     from pygql import gql
     from pygql.dsl import DSLSchema
 
@@ -48,6 +48,34 @@ Ejemplo
                   ).select(ds.MarketStatsPoint.open)
 
     print(ds.query(query_dsl))
+
+    # marketOrderBook
+    query = gql('''
+      query getOrderBook($marketCode: ID!) {
+        orderBook: marketOrderBook(marketCode: $marketCode, limit: 50) {
+          buy {
+            limitPrice
+            amount
+            __typename
+          }
+          sell {
+            limitPrice
+            amount
+            __typename
+          }
+          spread
+          __typename
+        }
+      }
+    ''')
+
+    params = {
+      "marketCode": "CHACLP"
+    }
+
+    operation_name = "getOrderBook"
+
+    print(client.execute(query, variable_values=params))
 
 * Para ejecutar ``mutations`` usar: ``ds.mutation(query_dsl)`` 
 * Para ejecutar ``queries`` usar: ``ds.query(query_dsl)`` 
@@ -72,14 +100,35 @@ Es posible acelerar las consultas realizándolas simultaneamente usando el param
 
     ds = DSLSchema(client)
     
-    query_dsl = ds.Query.marketStats.args(
-                    marketCode="CHACLP", 
-                    aggregation="h1"
-                  ).select(ds.MarketStatsPoint.open)
+    query = gql('''
+      query getOrderBook($marketCode: ID!) {
+        orderBook: marketOrderBook(marketCode: $marketCode, limit: 50) {
+          buy {
+            limitPrice
+            amount
+            __typename
+          }
+          sell {
+            limitPrice
+            amount
+            __typename
+          }
+          spread
+          __typename
+        }
+      }
+    ''')
 
-    print(ds.query(query_dsl))
+    params = {
+      "marketCode": "CHACLP"
+    }
 
-Véase ``examples/using_batcher.py``
+    operation_name = "getOrderBook"
+
+    print(client.execute(query, variable_values=params).data)
+
+
+Para más detalles véase ``examples/using_batcher.py``
 
 
 Implementación basada en: https://dev-blog.apollodata.com/query-batching-in-apollo-63acfd859862
