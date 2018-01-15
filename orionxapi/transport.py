@@ -5,7 +5,8 @@ import time
 from hashlib import sha256
 from pygql.transport.batch_transport import BatchTransport
 from pygql.transport.session_transport import SessionTransport
-
+from graphql.language.printer import print_ast
+from graphql.execution import ExecutionResult
 
 def hmac_sha256(secret_key, timestamp, body):
   key = bytearray(secret_key, 'utf-8')
@@ -16,7 +17,7 @@ def hmac_sha256(secret_key, timestamp, body):
 
 class CustomBatchTransport(BatchTransport):
   def __init__(self, api_key, secret_key, *args, **kwargs):
-    super(BatchTransport, self).__init__(*args, **kwargs)
+    super(CustomBatchTransport, self).__init__(*args, **kwargs)
     self.api_key = api_key
     self.secret_key = secret_key
 
@@ -80,9 +81,9 @@ class CustomBatchTransport(BatchTransport):
           future.set_exception(exc)
 
 
-class CustomSessionTransport(BatchTransport):
+class CustomSessionTransport(SessionTransport):
   def __init__(self, api_key, secret_key, *args, **kwargs):
-    super(BatchTransport, self).__init__(*args, **kwargs)
+    super(CustomSessionTransport, self).__init__(*args, **kwargs)
     self.api_key = api_key
     self.secret_key = secret_key
 

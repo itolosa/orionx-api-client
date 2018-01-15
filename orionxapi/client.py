@@ -5,28 +5,28 @@ import concurrent.futures
 from .transport import CustomBatchTransport, CustomSessionTransport
 
 
-def client(api_key, secret_key, use_batching=False):
+def client(api_key, secret_key, use_batching=False, timeout=None, **kwargs):
   url = 'https://api.orionx.io/graphql'
   if use_batching:
     cs = CustomBatchTransport(
-      url=url,
       api_key,
       secret_key,
+      url=url,
       use_json=True,
-      timeout=5
+      timeout=timeout
     )
   else:
     cs = CustomSessionTransport(
-      url=url,
       api_key,
       secret_key,
+      url=url,
       use_json=True,
-      timeout=5
+      timeout=timeout
     )
   client = Client(
-    retries=3,
     transport=cs,
-    fetch_schema_from_transport=True
+    fetch_schema_from_transport=True,
+    **kwargs
   )
   return client
 
