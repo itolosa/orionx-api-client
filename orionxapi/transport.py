@@ -2,17 +2,17 @@ import ujson
 import requests
 import hmac
 import time
-from hashlib import sha256
+from hashlib import sha512
 from pygql.transport.batch_transport import BatchTransport
 from pygql.transport.session_transport import SessionTransport
 from graphql.language.printer import print_ast
 from graphql.execution import ExecutionResult
 
-def hmac_sha256(secret_key, timestamp, body):
+def hmac_sha512(secret_key, timestamp, body):
   key = bytearray(secret_key, 'utf-8')
   msg = str(timestamp) + str(body)
   msg = msg.encode('utf-8')
-  return hmac.HMAC(key, msg, sha256)
+  return hmac.HMAC(key, msg, sha512).hexdigest()
 
 
 class CustomBatchTransport(BatchTransport):
@@ -51,7 +51,7 @@ class CustomBatchTransport(BatchTransport):
       try:
         data = ujson.dumps(new_query_payloads)
         timestamp = str(time.time())
-        signature = str(hmac_sha256(self.secret_key, timestamp, data))
+        signature = str(hmac_sha512(self.secret_key, timestamp, data))
 
         headers = {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ class CustomSessionTransport(SessionTransport):
 
     timestamp = str(time.time())
     data = ujson.dumps(payload)
-    signature = str(hmac_sha256(self.secret_key, timestamp, data))
+    signature = str(hmac_sha512(self.secret_key, timestamp, data))
 
     headers = {
       'Content-Type': 'application/json',
