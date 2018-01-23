@@ -1,12 +1,11 @@
 from pygql import Client
 import ujson
-import hashlib
 import concurrent.futures
 from .transport import CustomBatchTransport, CustomSessionTransport
 
 
 def client(api_key, secret_key, use_batching=False, timeout=None, **kwargs):
-  url = 'https://api.orionx.io/graphql'
+  url = 'https://api2.orionx.io/graphql'
   if use_batching:
     cs = CustomBatchTransport(
       api_key,
