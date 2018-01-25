@@ -19,7 +19,7 @@ install_requires = [
 if sys.version_info < (3, 5):
     install_requires.append('futures')
 
-version = '1.0.4'
+version = '1.0.5'
 
 setup(name='orionx-api-client',
   version='1.0.4',
