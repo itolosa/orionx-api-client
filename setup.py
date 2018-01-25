@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 import sys
-import orionxapi
+#import orionxapi
 
 long_desc = '''Orionx API Client for Python is a client 
 library to manage operations on the Orionx exchange platform.'''
@@ -19,10 +19,10 @@ install_requires = [
 if sys.version_info < (3, 5):
     install_requires.append('futures')
 
-version = orionxapi.__version__
+version = '1.0.4'
 
 setup(name='orionx-api-client',
-  version=version,
+  version='1.0.4',
   description='Orionx API Client',
   long_description=long_desc,
   url='http://github.com/itolosa/orionx-api-client',
