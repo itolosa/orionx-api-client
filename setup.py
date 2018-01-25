@@ -22,7 +22,7 @@ if sys.version_info < (3, 5):
 version = '1.0.5'
 
 setup(name='orionx-api-client',
-  version='1.0.4',
+  version=version,
   description='Orionx API Client',
   long_description=long_desc,
   url='http://github.com/itolosa/orionx-api-client',
