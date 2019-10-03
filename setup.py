@@ -8,7 +8,7 @@ long_desc = '''Orionx API Client for Python is a client
 library to manage operations on the Orionx exchange platform.'''
 
 install_requires = [
-  'requests==2.18.4',
+  'requests==2.20.0',
   'six==1.11.0',
   'ujson==1.35',
   'graphql-core==2.0',
