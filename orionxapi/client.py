@@ -5,7 +5,7 @@ from .transport import CustomBatchTransport, CustomSessionTransport
 
 
 def client(api_key, secret_key, use_batching=False, timeout=None, **kwargs):
-  url = 'https://api2.orionx.io/graphql'
+  url = 'https://apiunlimited.orionx.io/graphql'
   if use_batching:
     cs = CustomBatchTransport(
       api_key,
