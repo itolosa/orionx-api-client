@@ -1,8 +1,7 @@
 # Orionx Api Client
 
 [![PyPI version fury.io](https://badge.fury.io/py/orionx-api-client.svg)](https://pypi.python.org/pypi/orionx-api-client/) [![PyPi license](https://badgen.net/pypi/license/orionx-api-client/)](https://pypi.org/project/orionx-api-client/)
- [![PyPI pyversions](https://img.shields.io/pypi/pyversions/orionx-api-client.svg)](https://pypi.python.org/pypi/orionx-api-client/) [![Downloads](https://static.pepy.tech/badge/orionx-api-client)](https://pepy.tech/project/orionx-api-client)
-
+ [![PyPI pyversions](https://img.shields.io/pypi/pyversions/orionx-api-client.svg)](https://pypi.python.org/pypi/orionx-api-client/) [![Downloads](https://static.pepy.tech/badge/orionx-api-client)](https://pepy.tech/project/orionx-api-client) [![codecov](https://codecov.io/gh/itolosa/orionx-api-client/graph/badge.svg?token=X93E30V5XU)](https://codecov.io/gh/itolosa/orionx-api-client)
 
 Orionx Api Client is a GraphQL Client for Orionx Exchange (orionx.com)
 
@@ -30,27 +29,18 @@ To execute the examples you have to setup an `API KEY` and a `SECRET KEY`
 You can obtain them by following this tutorial: [link](https://docs.orionx.com/docs#creaci%C3%B3n-de-api-keys).
 
 ```python
-from gql import gql
-from gql.dsl import DSLQuery, DSLSchema, dsl_gql
+from orionx_api_client import Orionx
 
-from orionx_api_client import client
-
-client = client(api_key, secret_key)
+client = Orionx("<api-key>", "<secret-key>")
 
 with client as session:
-    assert client.schema is not None
+    ds = session.dsl()
 
-    ds = DSLSchema(client.schema)
-
-    query = dsl_gql(
-        DSLQuery(
-            ds.Query.marketStats.args(
-                marketCode="CHACLP",
-                aggregation="h1"
-            ).select(
-                ds.MarketStatsPoint.open
-            )
-        )
+    query = ds.Query.marketStats.args(
+        marketCode="BTCCLP",
+        aggregation="h1"
+    ).select(
+        ds.MarketStatsPoint.open
     )
 
     print(session.execute(query))

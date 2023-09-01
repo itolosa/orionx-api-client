@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "orionx_api_client"}]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4"
+python = ">=3.8.1,<4"
 requests = "^2.31.0"
 graphql-core = "^3.2.3"
 gql = "^3.4.1"
@@ -17,11 +17,20 @@ requests-toolbelt = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
-black = { version = "^23.7.0", python = ">=3.8,<4" }
+black = "^23.7.0"
 pytest-recording = "^0.13.0"
-isort = { version = "^5.12.0", python = ">=3.8.0,<4" }
+isort = "^5.12.0"
 pytest-cov = "^4.1.0"
-python-dotenv = { version = "^1.0.0", python = ">=3.8.0,<4" }
+python-dotenv = "^1.0.0"
+flake8 = "^6.1.0"
+pytest-mock = "^3.11.1"
+autoflake = "^2.2.1"
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = "88"
 
 [build-system]
 requires = ["poetry-core"]

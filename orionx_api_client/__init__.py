@@ -1,3 +1,3 @@
-from .client import as_completed, client
+from .client import Orionx, as_completed
 
-__all__ = ["client", "as_completed"]
+__all__ = ["Orionx", "as_completed"]

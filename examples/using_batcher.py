@@ -1,93 +1,83 @@
-from gql import gql
-
-from orionx_api_client import as_completed, client
+from orionx_api_client import Orionx, as_completed
 
 api_key = "API_KEY"
 secret_key = "SECRET_KEY"
-client = client(api_key, secret_key, use_batching=True)
+client = Orionx(api_key, secret_key, batching=True)
 
 with client as session:
-    assert client.schema is not None
-
     results = []
     # marketOrderBook
-    query = gql(
-        """
-    query getOrderBook($marketCode: ID!) {
-        orderBook: marketOrderBook(marketCode: $marketCode, limit: 50) {
-        buy {
-            limitPrice
-            amount
+    query = """
+        query getOrderBook($marketCode: ID!) {
+            orderBook: marketOrderBook(marketCode: $marketCode, limit: 50) {
+            buy {
+                limitPrice
+                amount
+                __typename
+            }
+            sell {
+                limitPrice
+                amount
+                __typename
+            }
+            spread
             __typename
+            }
         }
-        sell {
-            limitPrice
-            amount
-            __typename
-        }
-        spread
-        __typename
-        }
-    }
     """
-    )
 
-    params = {"marketCode": "CHACLP"}
+    params = {"marketCode": "BTCCLP"}
 
     operation_name = "getOrderBook"
 
     results.append(session.execute(query, variable_values=params))
 
     # marketStats
-    query = gql(
-        """
-    query getMarketStats($marketCode: ID!, $aggregation: MarketStatsAggregation!) {
-        marketStats(marketCode: $marketCode, aggregation: $aggregation) {
-        _id
-        open
-        close
-        high
-        low
-        volume
-        count
-        fromDate
-        toDate
-        __typename
+    query = """
+        query getMarketStats($marketCode: ID!, $aggregation: MarketStatsAggregation!) {
+            marketStats(marketCode: $marketCode, aggregation: $aggregation) {
+            _id
+            open
+            close
+            high
+            low
+            volume
+            count
+            fromDate
+            toDate
+            __typename
+            }
         }
-    }
     """
-    )
 
-    params = {"marketCode": "CHACLP", "aggregation": "h1"}
+    params = {"marketCode": "BTCCLP", "aggregation": "h1"}
 
     operation_name = "getMarketStats"
 
     results.append(session.execute(query, variable_values=params))
 
     # market
-    query = gql(
-        """
-    query getMarketIdleData($code: ID) {
-        market(code: $code) {
-        code
-        lastTrade {
-            price
-            __typename
-        }
-        secondaryCurrency {
+    query = """
+        query getMarketIdleData($code: ID) {
+            market(code: $code) {
             code
-            units
-            format
-            longFormat
+            lastTrade {
+                price
+                __typename
+            }
+            secondaryCurrency {
+                code
+                units
+                format
+                longFormat
+                __typename
+            }
             __typename
+            }
         }
-        __typename
-        }
-    }
     """
-    )
 
-    params = {"code": "CHACLP"}
+    params = {"code": "BTCCLP"}
 
     operation_name = "getMarketIdleData"
 
