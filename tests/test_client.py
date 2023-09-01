@@ -246,7 +246,7 @@ def test_sync_using_dsl(sync_client: Orionx) -> None:
         assert isinstance(session.execute(query), dict)
 
 
-def test_other(mocker: MockerFixture, batch_client: Orionx) -> None:
+def test_http_error(mocker: MockerFixture, batch_client: Orionx) -> None:
     with batch_client as session:
         mock: MagicMock = mocker.patch(
             "orionx_api_client.client.OrionxBatchTransport._request"
@@ -291,7 +291,7 @@ def test_other(mocker: MockerFixture, batch_client: Orionx) -> None:
             pass
 
 
-def test_asdasd(mocker: MockerFixture, batch_client: Orionx) -> None:
+def test_no_json_response(mocker: MockerFixture, batch_client: Orionx) -> None:
     with batch_client as session:
         mock: MagicMock = mocker.patch(
             "orionx_api_client.client.OrionxBatchTransport._request"
