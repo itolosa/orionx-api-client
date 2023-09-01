@@ -165,4 +165,5 @@ cassettes/
 # ignore vscode settings
 .vscode/
 
+# ignore mac metadata file
 .DS_Store
