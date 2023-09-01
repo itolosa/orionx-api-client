@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "orionx-api-client"
-version = "1.1.0"
+version = "1.1.1"
 description = "API Client for Orionx Exchange"
 authors = ["Ignacio Guerrero <ignacio.tolosa@usach.cl>"]
 license = "MIT"
