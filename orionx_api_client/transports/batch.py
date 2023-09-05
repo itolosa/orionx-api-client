@@ -22,14 +22,31 @@ log = logging.getLogger(__name__)
 
 
 class FutureExecResult(ExecutionResult):
+    """
+    Extension of the ExecutionResult class for \
+        handling execution results retrieved asynchronously.
+
+    This class utilizes the future mechanism to \
+        lazily fetch the data when the future result is available.
+    """
+
     def __init__(self, future: concurrent.futures.Future):
+        """
+        Initialize the FutureExecResult instance.
+
+        Args:
+            future: A future instance containing the eventual execution result.
+        """
         self.future = future
         self._data = None
         self._errors = None
         self._extensions = None
         self.filled = False
 
-    def _lazy_load(self):
+    def _lazy_load(self) -> None:
+        """
+        Internal method to load the result from the future when it's ready.
+        """
         if not self.filled:
             result = self.future.result()
             self._errors = result.get("errors")
@@ -39,31 +56,71 @@ class FutureExecResult(ExecutionResult):
 
     @property
     def data(self):
+        """
+        Get the data attribute, loading from the future if necessary.
+
+        Returns:
+            Data retrieved from the execution result.
+        """
         self._lazy_load()
         return self._data
 
     @property
     def errors(self):
+        """
+        Get the errors attribute, loading from the future if necessary.
+
+        Returns:
+            Errors retrieved from the execution result.
+        """
         self._lazy_load()
         return self._errors
 
     @property
     def extensions(self):
+        """
+        Get the extensions attribute, loading from the future if necessary.
+
+        Returns:
+            Extensions retrieved from the execution result.
+        """
         self._lazy_load()
         return self._extensions
 
 
 class OrionxBatchTransport(RequestsHTTPTransport):
     """
-    based on: https://dev-blog.apollodata.com/query-batching-in-apollo-63acfd859862
+    A transport layer that supports batching of multiple
+    GraphQL queries into a single HTTP request,
+    based on the concepts outlined in the 
+    Apollo's query batching article.
+
+    Raises:
+        TransportClosed: If the transport connection is not established.
+        TransportServerError: For server-side errors during the request.
+        TransportProtocolError: For invalid server responses.
     """
 
     class TerminateBatcher(Exception):
+        """
+        An internal exception class used to signal the termination of the batcher.
+        """
         pass
 
     def __init__(
         self, api_key: str, secret_key: str, *args: Any, **kwargs: Any
     ) -> None:
+        """
+        Initialize the OrionxBatchTransport instance.
+
+        Args:
+            api_key: The API key for authentication.
+            secret_key: The secret key for authentication.
+            *args: Additional positional arguments for the \
+                RequestsHTTPTransport initialization.
+            **kwargs: Additional keyword arguments for the \
+                RequestsHTTPTransport initialization.
+        """
         RequestsHTTPTransport.__init__(self, *args, **kwargs)
         self.headers_builder = HeadersBuilder(api_key, secret_key)
 
@@ -72,6 +129,26 @@ class OrionxBatchTransport(RequestsHTTPTransport):
         self.query_batcher.start()
 
     def _batch_query(self) -> None:
+        """
+        Continuously checks the query batcher queue,
+         collecting GraphQL queries and sending them as batched requests. 
+
+        Summary:
+            - **Accumulates** multiple GraphQL queries from a queue \
+                within a 10ms window.
+            - Forms a single **batched request** with necessary headers and parameters.
+            - **Dispatches** the batched request to the server.
+            - On response, **distributes** individual results to their\
+                  respective 'promise-like' `Future` objects.
+            - Captures and attaches **errors** to the respective `Future`\
+                  rather than raising them.
+
+        Side Effects:
+            This method's main output is the resolution or rejection of the `Future`
+             objects representing each query's result. Designed to run continuously,
+              making it ideal for a dedicated thread.
+        """
+
         while True:
             payloads_and_futures: List[Tuple[dict, concurrent.futures.Future]] = []
             payload_and_future: Tuple[
@@ -169,31 +246,39 @@ class OrionxBatchTransport(RequestsHTTPTransport):
                     future.set_result(result)
 
     def _request(self, **post_args: Any) -> requests.Response:
-        # Using the created session to perform requests
-        assert self.session is not None
-
-        return self.session.request(self.method, self.url, **post_args)  # type: ignore
-
-    def execute(  # type: ignore
-        self,
-        document: DocumentNode,
-        variable_values: Optional[Dict[str, Any]] = None,
-        operation_name: Optional[str] = None,
-    ) -> FutureExecResult:
-        """Execute GraphQL query.
-
-        Execute the provided document AST against the configured remote server. This
-        uses the requests library to perform a HTTP POST request to the remote server.
-
-        :param document: GraphQL query as AST Node object.
-        :param variable_values: Dictionary of input parameters (Default: None).
-        :param operation_name: Name of the operation that shall be executed.
-            Only required in multi-operation documents (Default: None).
-        :return: The result of execution.
-            `data` is the result of executing the query, `errors` is null
-            if no errors occurred, and is a non-empty array if an error occurred.
         """
+        Internal method to use the established session to perform the request.
 
+        Args:
+            **post_args: Keyword arguments to be passed to the request method.
+
+        Returns:
+            The response object from the request.
+
+        Raises:
+            AssertionError: If the session is not initialized.
+        """
+        assert self.session is not None
+        return self.session.request(self.method, self.url, **post_args)
+
+    def execute(self, document: DocumentNode,
+                variable_values: Optional[Dict[str, Any]] = None,
+                operation_name: Optional[str] = None,) -> FutureExecResult:
+        """
+        Execute a GraphQL query, batching it if possible.
+
+        Args:
+            document: GraphQL query as an AST Node object.
+            variable_values: Dictionary of input parameters (Default: None).
+            operation_name: Name of the operation to be executed. \
+                Required if document has multiple operations (Default: None).
+
+        Returns:
+            A FutureExecResult instance containing the eventual execution result.
+
+        Raises:
+            TransportClosed: If the transport connection is not established.
+        """
         if not self.session:
             raise TransportClosed("Transport is not connected")
 
